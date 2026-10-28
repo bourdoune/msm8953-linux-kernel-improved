@@ -580,8 +580,17 @@ int rmi_read_register_desc(struct rmi_device *d, u16 addr,
 		return ret;
 	++addr;
 
-	if (size_presence_reg < 0 || size_presence_reg > 35)
+	if (size_presence_reg == 0)
 		return -EIO;
+
+	/*
+	 * Synaptics ClearPad TDDI controllers (such as TD4310 on Xiaomi Redmi 5 Plus)
+	 * report extended presence registers (e.g. 72 bytes) exceeding the standard
+	 * 35-byte buffer. Clamp to sizeof(buf) to prevent stack overflow while
+	 * allowing standard F12 query/control/data register descriptors to probe.
+	 */
+	if (size_presence_reg > sizeof(buf))
+		size_presence_reg = sizeof(buf);
 
 	memset(buf, 0, sizeof(buf));
 

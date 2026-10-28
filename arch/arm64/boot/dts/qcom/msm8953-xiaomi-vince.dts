@@ -224,7 +224,8 @@
 };
 
 &rmi4_ts {
-	status = "disabled";
+	/* Synaptics ClearPad TD4310 TDDI touchscreen enabled with driver clamp fix */
+	status = "okay";
 };
 
 &sound_card {
